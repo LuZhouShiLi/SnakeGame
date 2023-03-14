@@ -10,7 +10,7 @@ export class GameMap extends AcGameObject{
         this.L = 0;// 一个格子的距离
         this.rows = 13;
         this.cols = 13;
-        this.inner_walls_counts = 80;// 默认20 障碍物数量
+        this.inner_walls_counts = 40;// 默认20 障碍物数量
         this.walls = [];
     }
 
@@ -71,7 +71,7 @@ export class GameMap extends AcGameObject{
 
 
                 // 如果对称的两个点都是被标记过
-                if(g[r][c] || g[c][r]){
+                if(g[r][c] || g[this.rows - 1 - r][this.cols - 1 - c]){
                     continue;
                 }
 
@@ -80,7 +80,7 @@ export class GameMap extends AcGameObject{
                     continue;
                 }
 
-                g[r][c] = g[c][r] = true;// 设置对称的障碍物
+                g[r][c] = g[this.rows - 1 - r][this.cols - 1 - c] = true;// 设置对称的障碍物  中心堆成  
 
                 break;
             }
@@ -93,7 +93,7 @@ export class GameMap extends AcGameObject{
         if(!this.check_connectivity(copy_g,this.rows - 2,1,1,this.cols - 2)){
             return false;// 检查 连通性
         }
-        
+
         for(let r = 0; r < this.rows; r++){
             for(let c= 0; c < this.cols; c++){
                 if(g[r][c]){
