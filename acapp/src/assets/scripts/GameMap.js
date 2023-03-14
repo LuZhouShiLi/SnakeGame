@@ -1,7 +1,8 @@
 import { AcGameObject } from "./AcGameObjects";
 import {Wall} from './Wall';
-export class GameMap extends AcGameObject{
 
+import { Snake } from "./Snake";// 导入蛇对象组件
+export class GameMap extends AcGameObject{
     // 构造函数
     constructor(ctx,parent){
         super();
@@ -12,7 +13,13 @@ export class GameMap extends AcGameObject{
         this.cols = 13;
         this.inner_walls_counts = 40;// 默认20 障碍物数量
         this.walls = [];
-    }
+
+        // 创建蛇对象 数组  一张地图 两条贪吃蛇
+        this.snakes = [
+        new Snake({id:0,color:"#4876EC",r:this.rows - 2,c: 1},this),
+        new Snake({id:1,color:"#F94848",r: 1,c:this.cols - 2},this),
+    
+    ]}
 
 
     // 检查连通性  传入参数 地图  起点坐标 终点坐标
@@ -33,8 +40,6 @@ export class GameMap extends AcGameObject{
                 return true;
             }
         }
-
-
         return false;
 
     }
@@ -119,11 +124,23 @@ export class GameMap extends AcGameObject{
         // this.create_walls();
     }
 
+
+
     update_size(){
         // 当浏览器缩放  更新画布尺寸
         this.L = parseInt(Math.min(this.parent.clientWidth / this.cols,this.parent.clientHeight / this.rows))
         this.ctx.canvas.width = this.L * this.cols;
         this.ctx.canvas.height = this.L * this.rows;
+    }
+
+    check_ready(){
+
+        // 检查两条蛇的状态 枚举没一条蛇
+        for(const snake of snakes){
+            
+        }
+
+
     }
 
     // 地图对象更新
