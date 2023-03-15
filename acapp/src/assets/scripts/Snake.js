@@ -11,10 +11,14 @@ export class Snake extends AcGameObject{
         this.gamemap = gamemap;
         this.cells = [new Cell(info.r,info.c)];// cell 0存放蛇头  cells数组 存放蛇身体
 
+        this.next_cell = null;// 下一步的目标位置
         this.speed = 5;// 速度
         this.direction = -1;// -1表示没有指令 0 1 2 3 表示上右下左
 
         this.status = 'idle';// idle 表示静止  Move表示正在移动 die表示失败
+
+        this.dr = [-1,0,1,0];// 四个方向行的偏移量
+        this.dc = [0,1,0,-1];// 四个方向列的偏移量
     }
 
 
@@ -22,21 +26,16 @@ export class Snake extends AcGameObject{
 
     }
 
+
+    next_step(){
+        // 将蛇的状态变为下一步
+
+        // 取出当前蛇的状态
+        const d = this.direction;
+    }
+
     update_move(){
-        // 蛇的移动距离 是 速度乘以 每两帧之间的时间间隔
         
-        // 遍历没一条蛇
-        for(const snake of this.snakes){
-            if(snake.status !== "idle"){
-                return false;
-            }
-
-            if(snake.direction === -1){
-                return false;
-            }
-        }
-
-        return true;// 两条蛇都准备好了 返回true
     }
 
     // 刷新函数

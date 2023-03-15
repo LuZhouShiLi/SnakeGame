@@ -136,9 +136,20 @@ export class GameMap extends AcGameObject{
     check_ready(){
 
         // 检查两条蛇的状态 枚举没一条蛇
-        for(const snake of snakes){
-            
+        // 蛇的移动距离 是 速度乘以 每两帧之间的时间间隔
+        
+        // 遍历没一条蛇
+        for(const snake of this.snakes){
+            if(snake.status !== "idle"){
+                return false;
+            }
+
+            if(snake.direction === -1){
+                return false;
+            }
         }
+
+        return true;// 两条蛇都准备好了 返回true
 
 
     }
