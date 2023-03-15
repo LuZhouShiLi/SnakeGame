@@ -110,9 +110,21 @@ export class GameMap extends AcGameObject{
         return true;
     }
 
+
+    add_listening_events(){
+        this.ctx.canvas.focus();// 画布聚焦
+
+        this.ctx.canvas.addEventListener("keydown",e=>{
+            if(e.key === 'w'){
+                
+            }
+        })
+    }
+
+
+
     // 地图对象开启  r如果不连通 尝试一千次创建 直到联通
     start(){
-
         // 循环1000
         for(let i = 0; i < 1000; i++){
             if(this.create_walls()){
@@ -120,7 +132,7 @@ export class GameMap extends AcGameObject{
             }
         }
 
-
+        this.add_listening_events();
         // this.create_walls();
     }
 
@@ -132,7 +144,8 @@ export class GameMap extends AcGameObject{
         this.ctx.canvas.width = this.L * this.cols;
         this.ctx.canvas.height = this.L * this.rows;
     }
-
+    
+    // 判断两条蛇是否都准备好下一回合
     check_ready(){
 
         // 检查两条蛇的状态 枚举没一条蛇
@@ -150,15 +163,25 @@ export class GameMap extends AcGameObject{
         }
 
         return true;// 两条蛇都准备好了 返回true
+    }
 
-
+    next_step(){
+        // 让两条蛇进入下一个回合
+        for(const snake of this.snakes){
+            snake.next_step();// 这里调用的是每一条蛇的下一步动作
+        }
     }
 
     // 地图对象更新
     update(){
         this.update_size();
-        this.render();
 
+        // 检查两条蛇是否准备好 然后开始走下一步
+        if(this.check_ready()){
+            this.next_step();
+        }
+
+        this.render();
     }
 
     render(){

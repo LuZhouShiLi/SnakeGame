@@ -27,11 +27,18 @@ export class Snake extends AcGameObject{
     }
 
 
+    set_direction(d){
+        this.direction = d;
+    }
+
     next_step(){
         // 将蛇的状态变为下一步
-
         // 取出当前蛇的状态
         const d = this.direction;
+        this.next_cell = new Cell(this.cells[0].r + this.dr[d],this.cells[0].c + this.dc[d]);
+        this.direction = -1;
+        this.status = "move";// 下一步状态是移动状态
+        this.step++;
     }
 
     update_move(){
