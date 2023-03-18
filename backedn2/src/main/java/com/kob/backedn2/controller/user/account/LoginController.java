@@ -11,8 +11,7 @@ import java.util.Map;
 
 @RestController
 public class LoginController {
-
-//     注入service的接口
+//   注入service的接口
     @Autowired
     private LoginService loginService;
 
