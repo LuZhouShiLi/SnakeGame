@@ -1,38 +1,46 @@
 package com.kob.backedn2.service.impl.user.bot;
+
 import com.kob.backedn2.mapper.BotMapper;
 import com.kob.backedn2.pojo.Bot;
 import com.kob.backedn2.pojo.User;
 import com.kob.backedn2.service.impl.utils.UserDetailsImpl;
-import com.kob.backedn2.service.user.bot.AddService;
+import com.kob.backedn2.service.user.bot.UpdateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import javax.jws.soap.SOAPBinding;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 @Service
-public class AddServiceImpl implements AddService {
-    // 将接口注入进来
+public class UpdateServiceImpl implements UpdateService {
+
     @Autowired
-    private BotMapper botMapper;// 使用Mapper操作数据库
+    private BotMapper botMapper;
 
+    // data是从前端获取的容器 键值对
     @Override
-    public Map<String, String> add(Map<String, String> data) {
-
-        // 从token中获取用户
-        UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
-        UserDetailsImpl loginUser = (UserDetailsImpl) authenticationToken.getPrincipal();
+    public Map<String, String> update(Map<String, String> data) {
+        // 现根据token知道自己是谁 获取user
+        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        UserDetailsImpl loginUser = (UserDetailsImpl) usernamePasswordAuthenticationToken.getPrincipal();
         User user = loginUser.getUser();
 
-        // 根据key获取map中的数据  post请求 返回data  data是一个键值对容器  最终是通过AddController的url路径获取资源
+        // 然后获取前端返回的数据  首先根据data中的bot_id 获取id
+        int bot_id = Integer.parseInt(data.get("bot_id"));// 获取的是字符串  然后解析成int数据
+
+        // 从data数据中获取title description  content三个信息  填充到新的Bot记录 然后使用Mapper接口 插入到数据库
         String title = data.get("title");
         String description = data.get("description");
         String content = data.get("content");
 
         Map<String,String> map = new HashMap<>();
+
+        // 根据前端解析出来的bot_id  使用botMapper接口 查询数据库 返回一个bot记录
+        Bot bot = botMapper.selectById(bot_id);
 
         if(title == null || title.length() == 0){
             map.put("error_message","标题不能为空");
@@ -63,13 +71,22 @@ public class AddServiceImpl implements AddService {
             return map;
         }
 
-        // 创建一个bot对象
-        Date now = new Date();
-        Bot bot = new Bot(null,user.getId(),title,description,content,1500,now,now);
+        if(bot == null){
+            map.put("error_message","Bot不存在或者已经删除");
+            return map;
+        }
 
-        // 将Bot对象添加到数据库中
-        botMapper.insert(bot);
+        if(!bot.getUserId().equals(user.getId())){
+            map.put("error_message","没有权限修改Bot");
+            return  map;
+        }
+
+        Bot new_bot = new Bot(bot.getId(),user.getId(),title,description,content,bot.getRating(),bot.getCreatetime(),new Date());
+
+        // 调用接口 更新Bot
+        botMapper.updateById(new_bot);
         map.put("error_message","success");
+
 
         return map;
     }
